@@ -66,7 +66,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
         controller: myTabController,
         children: <Widget>[
           RefreshIndicator(
-            backgroundColor: Colors.deepPurple,
+            backgroundColor: Colors.white,
             onRefresh: () => _loadData(),
             child: ListView.builder(
               itemCount: _cryptoData == null ? 0 : _cryptoData.length,

@@ -11,13 +11,99 @@ class Search extends StatefulWidget {
 class _SearchState extends State<Search> {
   var _primaryTextColor = Colors.white;
   var _current = [];
+  var showContent = false;
 
-  Future<Null> search(String currency) async {
-    var response =
-        await http.get("https://api.coinmarketcap.com/v1/ticker/bitcoin/");
-    setState(() {
-      _current = json.decode(response.body);
-    });
+  Future<Null> search(String currency, bool submit) async {
+    try {
+      var response =
+          await http.get("https://api.coinmarketcap.com/v1/ticker/$currency/");
+      setState(() {
+        _current = json.decode(response.body);
+      });
+    } catch (e) {
+      setState(() {
+        showContent = false;
+      });
+      if (submit) {
+        Scaffold.of(context).showSnackBar(new SnackBar(
+              content: Text(
+                  "Could not find coin, are you sure you spelled it correctly?"),
+            ));
+      }
+    }
+  }
+
+  showTile() {
+    if (showContent == true) {
+      return ListTile(
+        leading: CircleAvatar(
+          backgroundColor: double.parse(_current[0]['percent_change_1h']) < 0
+              ? Colors.red
+              : Colors.lightGreen,
+          child: Text(
+            _current[0]["symbol"],
+            style: TextStyle(fontSize: 10.0, color: Colors.white),
+          ),
+        ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            new Padding(
+                padding: EdgeInsets.all(10.0),
+                child: Column(
+                  children: <Widget>[
+                    Text("%1h", style: TextStyle(color: _primaryTextColor)),
+                    Text("${_current[0]['percent_change_1h']}",
+                        style: TextStyle(
+                            color:
+                                double.parse(_current[0]['percent_change_1h']) <
+                                        0
+                                    ? Colors.redAccent[100]
+                                    : Colors.greenAccent[400]))
+                  ],
+                )),
+            new Padding(
+                padding: EdgeInsets.all(10.0),
+                child: Column(
+                  children: <Widget>[
+                    Text("%24h", style: TextStyle(color: _primaryTextColor)),
+                    Text("${_current[0]['percent_change_24h']}",
+                        style: TextStyle(
+                            color: double.parse(
+                                        _current[0]['percent_change_24h']) <
+                                    0
+                                ? Colors.redAccent[100]
+                                : Colors.greenAccent[400]))
+                  ],
+                )),
+            new Padding(
+                padding: EdgeInsets.all(10.0),
+                child: Column(
+                  children: <Widget>[
+                    Text("%7d", style: TextStyle(color: _primaryTextColor)),
+                    Text("${_current[0]['percent_change_7d']}",
+                        style: TextStyle(
+                            color:
+                                double.parse(_current[0]['percent_change_7d']) <
+                                        0
+                                    ? Colors.redAccent[100]
+                                    : Colors.greenAccent[400]))
+                  ],
+                )),
+          ],
+        ),
+        title: Text(
+          "${_current[0]["name"]} (${_current[0]["symbol"]})",
+          style: TextStyle(color: _primaryTextColor),
+        ),
+        subtitle: Text(
+          "\$${_current[0]["price_usd"]}\n${_current[0]["price_btc"]} BTC",
+          style: TextStyle(fontSize: 12.0, color: _primaryTextColor),
+        ),
+      );
+    } else {
+      return Container();
+    }
   }
 
   @override
@@ -40,7 +126,8 @@ class _SearchState extends State<Search> {
                 ),
                 child: TextField(
                   onSubmitted: (String xd) {
-                    print(xd);
+                    search(xd, true);
+                    showContent = true;
                   },
                   style: TextStyle(color: Colors.white, fontSize: 15.0),
                   decoration: InputDecoration(
@@ -49,16 +136,17 @@ class _SearchState extends State<Search> {
                         EdgeInsets.only(left: 50.0, top: 15.0, bottom: 15.0),
                     hintText: 'Search for specific cryptos',
                     hintStyle: TextStyle(color: Colors.white),
-                    border: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0)),
+                   /* border: UnderlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0)),*/
+                    border: InputBorder.none,                        
                   ),
                 ),
               ),
-              Text("Test"),
             ],
           ),
         ),
         SizedBox(height: 50.0),
+        showTile(),
       ],
     );
   }
