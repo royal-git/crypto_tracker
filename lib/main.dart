@@ -12,7 +12,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   var _cryptoData;
-
   Future<Null> _loadData() async {
     http.Response response =
         await http.get("https://api.coinmarketcap.com/v1/ticker/?limit=50");
@@ -38,7 +37,8 @@ class _MyAppState extends State<MyApp> {
             onPressed: () {
               _loadData();
             },
-          )
+          ),
+          
         ],
         backgroundColor: Colors.white,
         elevation: 0.0,
