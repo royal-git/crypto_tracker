@@ -1,8 +1,5 @@
 # crypto_track
 
-A new Flutter project.
+Use an online API to fetch latest crypto prices and display it as a listview, also supports specific searches. 
 
-## Getting Started
-
-For help getting started with Flutter, view our online
-[documentation](https://flutter.io/).
+![](https://i.imgur.com/UoXHfiY.png | width = 100)
